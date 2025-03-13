@@ -17,21 +17,22 @@ public class User {
 	private String lastName;
 	private String PhoneNumber;
 	private String Email;
-	private Boolean Reviewer;
-	private Boolean Admin;
+	private boolean Reviewer;
+	private boolean Admin;
 	
 	public int getId() {
 		return id;
 	}
 	public void setId(int id) {
 		this.id = id;
-	}
-	public String getUserName() {
-		return username;
-	}
-	public void setUserName(String userName) {
-		this.username = userName;
-	}
+	}	
+		public String getUsername() {
+			return username;
+		}
+		public void setUsername(String username) {
+			this.username = username;
+		}
+	
 	public String getPassword() {
 		return password;
 	}
@@ -62,18 +63,16 @@ public class User {
 	public void setEmail(String email) {
 		Email = email;
 	}
-	
-	
-	public Boolean getReviewer() {
+	public boolean isReviewer() {
 		return Reviewer;
 	}
-	public void setReviewer(Boolean reviewer) {
+	public void setReviewer(boolean reviewer) {
 		Reviewer = reviewer;
 	}
-	public Boolean getAdmin() {
+	public boolean isAdmin() {
 		return Admin;
 	}
-	public void setAdmin(Boolean admin) {
+	public void setAdmin(boolean admin) {
 		Admin = admin;
 	}
 	@Override
