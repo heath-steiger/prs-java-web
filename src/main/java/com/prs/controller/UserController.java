@@ -5,11 +5,13 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.prs.db.UserRepo;
 import com.prs.model.User;
+import com.prs.model.UserLogin;
 
 @CrossOrigin
 @RestController
@@ -40,6 +42,17 @@ public class UserController {
 	public User add(@RequestBody User user) {
 		return userRepo.save(user);
 	}
+	@PostMapping("/login")
+		public ResponseEntity<UserLogin> login(@RequestBody UserLogin userLogin) {
+	        User user = userRepo.findByUsernameAndPassword(userLogin.getUsername(), userLogin.getPassword());
+	        
+	        if (user == null) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	        }
+	        
+	        return ResponseEntity.ok(userLogin);
+	    }
+	
 	
 	@PutMapping("/{id}")
 	public void putVendor(@PathVariable int id, @RequestBody User user) {

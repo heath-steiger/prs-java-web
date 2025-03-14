@@ -34,6 +34,16 @@ public class LineitemController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "LineItem not found for id" + id);
 		}
 	}
+	
+	@GetMapping("/lines-for-req/{id}")
+	public Optional<LineItem> getByRequestId(@PathVariable int id) {
+		Optional<LineItem> l = lineitemRepo.findByRequestId(id);
+		if (l.isPresent()) {
+			return l;
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "LineItem not found for id" + id);
+		}
+	}
 
 	@PostMapping("")
 	public LineItem add(@RequestBody LineItem lineitem) {

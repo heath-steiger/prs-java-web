@@ -35,13 +35,20 @@ public class RequestController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found for id" + id);
 		}
 	}
+	
+	@GetMapping("/list-review/{id}")
+	public List<Request> getRequestByReview(@PathVariable int id){
+		String Review = "Review";
+	return requestRepo.findByStatusAndUserIdNot(Review, id);
+	
+	}
 
 	@PostMapping("")
 	public Request add(@RequestBody Request request) {
-//		request.setRequestNumber(getRequestNumber());
-//		request.setStatus("New");
-//		request.setTotal(0.0);
-//		request.setSubmittedDate(LocalDate.now());
+		request.setRequestNumber(getRequestNumber());
+		request.setStatus("New");
+		request.setTotal(0.0);
+		request.setSubmittedDate(LocalDate.now());
 		
 		return requestRepo.save(request);
 	}
@@ -60,6 +67,44 @@ public class RequestController {
 					HttpStatus.NOT_FOUND, "Request not found for id"+id);
 		}
 	}
+	@PutMapping("/submit-review/{id}")
+	public void putRequestReview(@PathVariable int id) {
+		if (requestRepo.existsById(id)) {
+		Request r = requestRepo.findById(id).get();
+		r.setStatus("Review");
+		requestRepo.save(r);
+		} else
+
+		{
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found for id" + id);
+		}
+	}
+	
+	@PutMapping("/approve/{id}")
+	public void putRequestApproval(@PathVariable int id) {
+		if (requestRepo.existsById(id)) {
+		Request r = requestRepo.findById(id).get();
+		r.setStatus("Approved");
+		requestRepo.save(r);
+		} else
+
+		{
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found for id" + id);
+		}
+	}
+	
+	@PutMapping("/reject/{id}")
+	public void putRequestRejection(@PathVariable int id) {
+		if (requestRepo.existsById(id)) {
+		Request r = requestRepo.findById(id).get();
+		r.setStatus("Rejected");
+		requestRepo.save(r);
+		} else
+
+		{
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found for id" + id);
+		}
+	}
 
 	@DeleteMapping("/{id}")
 	public void delRequest(@PathVariable int id) {
@@ -71,28 +116,28 @@ public class RequestController {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found for id" + id);
 		}
 	}
-//	private String getRequestNumber() {
-//	    String requestNbr = "R";
-//	    
-//	    LocalDate today = LocalDate.now();
-//	    requestNbr += today.format(DateTimeFormatter.ofPattern("yyMMdd"));
-//	    
-//	    String maxReqNbr = requestRepo.getMaxRequestNumber();
-//	    String reqNbr = "";
-//	    if (maxReqNbr != null) {
-//	        // get last 4 characters, convert to number
-//	        String tempNbr = maxReqNbr.substring(7);
-//	        int nbr = Integer.parseInt(tempNbr);
-//	        nbr++;
-//	        // pad w/ leading zeros
-//	        reqNbr += nbr;
-//	        reqNbr = String.format("%04", '0');
-//	    }
-//	    else {
-//	        reqNbr = "0001";
-//	    }
-//	    requestNbr += reqNbr;
-//	    return requestNbr;
-//
-//	}
+	private String getRequestNumber() {
+	    String requestNbr = "R";
+	    
+	    LocalDate today = LocalDate.now();
+	    requestNbr += today.format(DateTimeFormatter.ofPattern("yyMMdd"));
+	    
+	    String maxReqNbr = requestRepo.findTopRequestNumber();
+	    String reqNbr = "";
+	    if (maxReqNbr != null) {
+	        // get last 4 characters, convert to number
+	        String tempNbr = maxReqNbr.substring(7);
+	        int nbr = Integer.parseInt(tempNbr);
+	        nbr++;
+	        // pad w/ leading zeros
+	        reqNbr += nbr;
+	        reqNbr = String.format("%04d", nbr);
+	    }
+	    else {
+	        reqNbr = "0001";
+	    }
+	    requestNbr += reqNbr;
+	    return requestNbr;
+
+	}
 }
