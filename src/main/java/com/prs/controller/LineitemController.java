@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.prs.db.LineitemRepo;
+import com.prs.db.RequestRepo;
 import com.prs.model.LineItem;
+import com.prs.model.Request;
 
 
 @CrossOrigin
@@ -19,6 +21,8 @@ public class LineitemController {
 
 	@Autowired
 	private LineitemRepo lineitemRepo;
+	 @Autowired
+	    private RequestRepo requestRepo;
 
 	@GetMapping("/")
 	public List<LineItem> getAllLineitem() {
@@ -36,9 +40,9 @@ public class LineitemController {
 	}
 	
 	@GetMapping("/lines-for-req/{id}")
-	public Optional<LineItem> getByRequestId(@PathVariable int id) {
-		Optional<LineItem> l = lineitemRepo.findByRequestId(id);
-		if (l.isPresent()) {
+	public List<LineItem> getByRequestId(@PathVariable int id) {
+		List<LineItem> l = lineitemRepo.findByRequestId(id);
+		if (l.isEmpty()) {
 			return l;
 		} else {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "LineItem not found for id" + id);
@@ -47,8 +51,9 @@ public class LineitemController {
 
 	@PostMapping("")
 	public LineItem add(@RequestBody LineItem lineitem) {
-
+		recalculateCollectionValue(lineitem.getRequest().getId());
 		return lineitemRepo.save(lineitem);
+		//recalculateCollectionValue();
 	}
 
 	@PutMapping("/{id}")
@@ -61,16 +66,40 @@ public class LineitemController {
 		} else {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "LineItem not found for id" + id);
 		}
+		recalculateCollectionValue(lineitem.getRequest().getId());
 	}
 
 	@DeleteMapping("/{id}")
 	public void delLineItem(@PathVariable int id) {
 		if (lineitemRepo.existsById(id)) {
+			LineItem l = lineitemRepo.findById(id).get();
 			lineitemRepo.deleteById(id);
+			recalculateCollectionValue(l.getRequest().getId());
 		} else
 
 		{
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "LineItem not found for id" + id);
 		}
 	}
+	
+	private void recalculateCollectionValue(int reqId){
+		
+		Request request = requestRepo.findById(reqId).get();
+		List<LineItem> lineItems = lineitemRepo.findByRequestId(reqId);
+		double total = 0;
+        for (LineItem li : lineItems) {
+            total += li.getQuantity() * li.getProduct().getPrice();
+        } 
+		
+        request.setTotal(total);
+        requestRepo.save(request);
+	    }
 }
+
+
+
+
+
+
+
+

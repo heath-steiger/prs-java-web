@@ -10,7 +10,7 @@ import com.prs.model.Request;
 
 public interface RequestRepo extends JpaRepository<Request, Integer>{
 	
-	
+	Optional<Request> findById(int id);
 	List<Request> findByStatusAndUserIdNot(String status, int id);
 	
 	default String findTopRequestNumber() {
